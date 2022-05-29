@@ -9,7 +9,7 @@ use json::object;
 use log::debug;
 
 use crate::{
-    bili_requests, configs, db,
+    bili_requests, db,
     enums::{self, Status},
     structs::User,
     utils::get_response_json,
@@ -442,7 +442,7 @@ async fn not_found() -> HttpResponse {
     HttpResponse::NotFound().body("")
 }
 
-pub async fn run_server() -> std::io::Result<()> {
+pub async fn run_server(server_port: u16) -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .service(query_by_id)
@@ -459,7 +459,7 @@ pub async fn run_server() -> std::io::Result<()> {
             .route("/owner/keyregen", post().to(owner_key_regen))
             .default_service(web::route().to(not_found))
     })
-    .bind(("127.0.0.1", configs::SERVER_PORT))?
+    .bind(("127.0.0.1", server_port))?
     .run()
     .await
 }

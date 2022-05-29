@@ -1,4 +1,4 @@
-use flexi_logger::{style, DeferredNow, Duplicate, Record, TS_DASHES_BLANK_COLONS_DOT_BLANK};
+use flexi_logger::{DeferredNow, Duplicate, Record, style, TS_DASHES_BLANK_COLONS_DOT_BLANK};
 
 mod configs;
 mod db;
@@ -33,9 +33,14 @@ async fn main() -> std::io::Result<()> {
         .start()
         .unwrap();
 
+    // config
+    let config = configs::Config::parse("config.toml").unwrap();
+
     // database
     db::prepare().await;
 
     // server
-    routing::run_server().await
+    let port = config.server.unwrap().port.unwrap_or(7788);
+
+    routing::run_server(port).await
 }
